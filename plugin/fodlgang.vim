@@ -118,6 +118,10 @@ function! MyFoldText()
   let numLines = v:foldend - v:foldstart + 1
   let numChars = strlen(substitute(text, '\v\s+', '', 'g')) " number of non-whitespace chars
 
+  " make sure fold preview text indentation is correct when using tabs
+  let numTabs = strlen(matchstr(text, '\v^[\t]+')) " number of leading tabs
+  let sub = substitute(line, '\v^[\t]+', repeat(repeat(' ', &shiftwidth), numTabs), 'g')
+
   " Fold text for /* ... */ -style block comments
   if match(line, '\v^\s*(/\*)[*/]*\s*$') == 0
     let leader = substitute(text, '\v^(\s*)([/*]*).*$', '\1\2', '')         " get initial space and opening comment characters
@@ -127,14 +131,12 @@ function! MyFoldText()
 
   " Fold text for codeblocks enclosed in ({[]}) brackets
   else
-    let sub = line
     let startbrace = substitute(line, '\v^.*\{\s*$', '{', 'g')
     if startbrace == '{'
       let line = getline(v:foldend)
       let endbrace = substitute(line, '\v^\s*\}(.*)$', '}', 'g')
       if endbrace == '}'
-        let n = v:foldend - v:foldstart + 1
-        let sub = sub.substitute(line, '\v^\s*\}(.*)$', '... ' . numLines . 'l ' .numChars . 'c ...}\1', 'g')
+        let sub = sub.substitute(line, '\v^\s*\}(.*)$', '... ' . numLines . 'l ' . numChars . 'c ...}\1', 'g')
       endif
     endif
   endif
