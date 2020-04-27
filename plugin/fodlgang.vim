@@ -37,7 +37,28 @@ function! IndentLevel(lnum)
   return indent(a:lnum) / &shiftwidth
 endfunction
 
-function! NextNonBlankLine(lnum)
+function! HeaderLevel(lnum)
+  " return number of leading hash signs
+  " start with header size 2 to avoid collapsing standard #-prefixed comments
+  return strlen(matchstr(getline(a:lnum), '\v^##+'))
+endfunction
+
+function! PrevHeaderLineNum(lnum)
+  let numlines = line('$')
+  let current = a:lnum - 1
+
+  while current >= 0
+    if getline(current) =~? '\v^##+'
+      return current
+    endif
+
+    let current -= 1
+  endwhile
+
+  return -2
+endfunction
+
+function! NextNonBlankLineNum(lnum)
   let numlines = line('$')
   let current = a:lnum + 1
 
@@ -47,6 +68,21 @@ function! NextNonBlankLine(lnum)
     endif
 
     let current += 1
+  endwhile
+
+  return -2
+endfunction
+
+function! PrevNonBlankLineNum(lnum)
+  let numlines = line('$')
+  let current = a:lnum - 1
+
+  while current >= 0
+    if getline(current) =~? '\v\S'
+      return current
+    endif
+
+    let current -= 1
   endwhile
 
   return -2
@@ -66,8 +102,19 @@ function! GetLineFoldLevel(lnum)
     return '-1'
   endif
 
+  " Fold markdown header-deliniated sections
+  let prev_header = HeaderLevel(PrevHeaderLineNum(a:lnum))
+  let curr_header = HeaderLevel(a:lnum)
+  if curr_header > 0
+    return '>' . curr_header
+  endif
+  if prev_header > 0
+    return prev_header
+  endif
+
+  let prev_indent = IndentLevel(PrevNonBlankLineNum(a:lnum))
   let curr_indent = IndentLevel(a:lnum)
-  let next_indent = IndentLevel(NextNonBlankLine(a:lnum))
+  let next_indent = IndentLevel(NextNonBlankLineNum(a:lnum))
 
   " Fold #regions
   if curr_indent > 0 && line =~? '#region'
