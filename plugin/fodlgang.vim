@@ -159,6 +159,39 @@ function! MyFoldText()
   let text = join(getline(v:foldstart, v:foldend))
   let numLines = v:foldend - v:foldstart + 1
   let numChars = strlen(substitute(text, '\v\s+', '', 'g')) " number of non-whitespace chars
+  let barChart = ''
+  let i = 0
+  let c = 0
+  if exists('g:fodlgang_bar_chart')
+    for l in getline(v:foldstart, v:foldend)
+      i++
+      if strlen(barChart) > 80
+        break
+      elseif i <= 10
+        c += strlen(line)
+      else
+        if c < 100:
+          barChart += '▁'
+        elseif c < 200:
+          barChart += '▂'
+        elseif c < 300:
+          barChart += '▃'
+        elseif c < 400:
+          barChart += '▄'
+        elseif c < 500:
+          barChart += '▅'
+        elseif c < 600:
+          barChart += '▆'
+        elseif c < 700:
+          barChart += '▇'
+        else:
+          barChart += '█'
+        fi
+        i = 0
+        c = 0
+      endif
+    endfor
+  fi
 
   " make sure fold preview text indentation is correct when using tabs
   let numTabs = strlen(matchstr(text, '\v^[\t]+')) " number of leading tabs
@@ -178,7 +211,11 @@ function! MyFoldText()
       let line = getline(v:foldend)
       let endbrace = substitute(line, '\v^\s*\}(.*)$', '}', 'g')
       if endbrace == '}'
-        let sub = sub.substitute(line, '\v^\s*\}(.*)$', '... ' . numLines . 'l ' . numChars . 'c ...}\1', 'g')
+        if exists('g:fodlgang_bar_chart')
+          let sub = sub.substitute(line, '\v^\s*\}(.*)$', barChart . '}\1', 'g')
+        else
+          let sub = sub.substitute(line, '\v^\s*\}(.*)$', '... ' . numLines . 'l ' . numChars . 'c ...}\1', 'g')
+        endif
       endif
     endif
   endif
