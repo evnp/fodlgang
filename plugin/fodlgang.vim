@@ -191,7 +191,7 @@ function! MyFoldText()
         c = 0
       endif
     endfor
-  fi
+  endif
 
   " make sure fold preview text indentation is correct when using tabs
   let numTabs = strlen(matchstr(text, '\v^[\t]+')) " number of leading tabs
