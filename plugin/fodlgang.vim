@@ -11,11 +11,6 @@ if exists("g:loaded_fodlgang")
 endif
 let g:loaded_fodlgang = 1
 
-" Save folds between file close/open
-
-autocmd BufWinLeave *.* mkview
-autocmd BufWinEnter *.* silent loadview=
-
 " Keymappings
 
 " set fodlgang_map_keys=0
