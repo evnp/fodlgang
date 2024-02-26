@@ -170,22 +170,22 @@ function! MyFoldText()
       elseif i <= 10
         c += strlen(line)
       else
-        if c < 100:
-          barChart += '▁'
-        elseif c < 200:
-          barChart += '▂'
-        elseif c < 300:
-          barChart += '▃'
-        elseif c < 400:
-          barChart += '▄'
-        elseif c < 500:
-          barChart += '▅'
-        elseif c < 600:
-          barChart += '▆'
-        elseif c < 700:
-          barChart += '▇'
-        else:
-          barChart += '█'
+        if c < 100
+          barChart .= '▁'
+        elseif c < 200
+          barChart .= '▂'
+        elseif c < 300
+          barChart .= '▃'
+        elseif c < 400
+          barChart .= '▄'
+        elseif c < 500
+          barChart .= '▅'
+        elseif c < 600
+          barChart .= '▆'
+        elseif c < 700
+          barChart .= '▇'
+        else
+          barChart .= '█'
         endif
         i = 0
         c = 0
