@@ -186,7 +186,7 @@ function! MyFoldText()
           barChart += '▇'
         else:
           barChart += '█'
-        fi
+        endif
         i = 0
         c = 0
       endif
